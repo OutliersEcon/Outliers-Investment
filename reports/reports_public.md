@@ -2,42 +2,42 @@
 
 ### Nasdaq 100
 
-- [QID](reports/QID.md)
-- [QLD](reports/QLD.md)
-- [SQQQ](reports/SQQQ.md)
-- [TQQQ](reports/TQQQ.md)
+- [QID](QID.md)
+- [QLD](QLD.md)
+- [SQQQ](SQQQ.md)
+- [TQQQ](TQQQ.md)
 
 ### S&P 500
 
-- [SDS](reports/SDS.md)
-- [SPXS](reports/SPXS.md)
-- [SSO](reports/SSO.md)
-- [UPRO](reports/UPRO.md)
+- [SDS](SDS.md)
+- [SPXS](SPXS.md)
+- [SSO](SSO.md)
+- [UPRO](UPRO.md)
 
 ### Russell 2000
 
-- [TNA](reports/TNA.md)
-- [TZA](reports/TZA.md)
+- [TNA](TNA.md)
+- [TZA](TZA.md)
 
 ### Treasury Bonds
 
-- [TMF](reports/TMF.md)
-- [TMV](reports/TMV.md)
+- [TMF](TMF.md)
+- [TMV](TMV.md)
 
 ### Gold
 
-- [GLL](reports/GLL.md)
-- [UGL](reports/UGL.md)
+- [GLL](GLL.md)
+- [UGL](UGL.md)
 
 ### Single Stocks
 
-- [TSDD](reports/TSDD.md)
-- [TSLL](reports/TSLL.md)
+- [TSDD](TSDD.md)
+- [TSLL](TSLL.md)
 
 ### Crypto
 
-- [CONI](reports/CONI.md)
-- [CONL](reports/CONL.md)
+- [CONI](CONI.md)
+- [CONL](CONL.md)
 
 ***
 
