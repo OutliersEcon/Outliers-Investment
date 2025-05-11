@@ -1,7 +1,5 @@
 # Decay Report for SQQQ
 
-**Report Date:** 2025-05-11
-
 ## 1. 最近三個交易日嘅decay：
 
 - 2025年5月7日: 0.0505%
