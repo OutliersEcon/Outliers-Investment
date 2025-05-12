@@ -41,6 +41,8 @@
 
 ***
 
+[Telegram bot](https://t.me/LeveragedETF_bot)
+
 [回到主頁](https://outliersecon.github.io/Outliers-Investment/)
 
 [Buy Me a Coffee 請我飲杯咖啡](https://buymeacoffee.com/outliersecon)
