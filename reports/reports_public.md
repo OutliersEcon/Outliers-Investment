@@ -2,10 +2,13 @@
 
 ### Nasdaq 100
 
-- [QID](QID.md)
-- [QLD](QLD.md)
-- [SQQQ](SQQQ.md)
-- [TQQQ](TQQQ.md)
+| Ticker          | Leverage Ratio |
+| --------------- | -------------- |
+| [TQQQ](TQQQ.md) | 3              |
+| [SQQQ](SQQQ.md) | -3             |
+| [QLD](QLD.md)   | 2              |
+| [QID](QID.md)   | -2             |
+
 
 ### S&P 500
 
