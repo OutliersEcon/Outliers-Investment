@@ -9,49 +9,38 @@
 | [QLD](QLD.md)   | 2              |
 | [QID](QID.md)   | -2             |
 
+
 ### S&P 500
 
-| Ticker          | Leverage Ratio |
-| --------------- | -------------- |
-| [UPRO](UPRO.md) | 3              |
-| [SPXS](SPXS.md) | -3             |
-| [SSO](SSO.md)   | 2              |
-| [SDS](SDS.md)   | -2             |
+- [SDS](SDS.md)
+- [SPXS](SPXS.md)
+- [SSO](SSO.md)
+- [UPRO](UPRO.md)
 
 ### Russell 2000
 
-| Ticker        | Leverage Ratio |
-| ------------- | -------------- |
-| [TNA](TNA.md) | 3              |
-| [TZA](TZA.md) | -3             |
+- [TNA](TNA.md)
+- [TZA](TZA.md)
 
 ### Treasury Bonds
 
-| Ticker        | Leverage Ratio |
-| ------------- | -------------- |
-| [TMF](TMF.md) | 3              |
-| [TMV](TMV.md) | -3             |
+- [TMF](TMF.md)
+- [TMV](TMV.md)
 
 ### Gold
 
-| Ticker        | Leverage Ratio |
-| ------------- | -------------- |
-| [UGL](UGL.md) | 2              |
-| [GLL](GLL.md) | -2             |
+- [GLL](GLL.md)
+- [UGL](UGL.md)
 
 ### Single Stocks
 
-| Ticker          | Leverage Ratio | Underlying |
-| --------------- | -------------- | ---------- |
-| [TSLL](TSLL.md) | 2              | Tesla      |
-| [TSDD](TSDD.md) | -2             | Tesla      |
+- [TSDD](TSDD.md)
+- [TSLL](TSLL.md)
 
 ### Crypto
 
-| Ticker          | Leverage Ratio | Underlying |
-| --------------- | -------------- | ---------- |
-| [CONL](CONL.md) | 2              | Bitcoin    |
-| [CONI](CONI.md) | -2             | Bitcoin    |
+- [CONI](CONI.md)
+- [CONL](CONL.md)
 
 ***
 
