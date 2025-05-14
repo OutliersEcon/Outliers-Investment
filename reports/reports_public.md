@@ -25,6 +25,13 @@
 | [TNA](TNA.md) | 3              |
 | [TZA](TZA.md) | -3             |
 
+### SOXX
+
+| Ticker        | Leverage Ratio |
+| ------------- | -------------- |
+| [SOXX](SOXX.md) | 3              |
+| [SOXS](SOXS.md) | -3             |
+
 ### Treasury Bonds
 
 | Ticker        | Leverage Ratio |
