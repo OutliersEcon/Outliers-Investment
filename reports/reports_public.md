@@ -29,7 +29,7 @@
 
 | Ticker        | Leverage Ratio |
 | ------------- | -------------- |
-| [SOXX](SOXX.md) | 3              |
+| [SOXL](SOXL.md) | 3              |
 | [SOXS](SOXS.md) | -3             |
 
 ### Treasury Bonds
