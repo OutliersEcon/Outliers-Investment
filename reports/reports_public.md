@@ -32,6 +32,13 @@
 | [SOXL](SOXL.md) | 3              |
 | [SOXS](SOXS.md) | -3             |
 
+### FXI
+
+| Ticker        | Leverage Ratio |
+| :-------------: | :--------------: |
+| [YINN](YINN.md) | 3              |
+| [YANG](YANG.md) | -3             |
+
 ### Treasury Bonds
 
 | Ticker        | Leverage Ratio |
