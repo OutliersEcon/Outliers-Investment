@@ -12,6 +12,7 @@ Leveraged ETF (槓桿ETF，簡稱LETF)係用複雜嘅衍生工具去放大某種
 ## 甚麼是耗損(decay)？
 
 - [Available Decay Reports](reports/reports_public)
+- [LETF模擬器](leveraged-etf-simulator)
 
 ***
 
