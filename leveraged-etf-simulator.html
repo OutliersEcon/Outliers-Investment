@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leveraged ETF Simulator</title>
+    <title>Advanced Leveraged ETF Simulator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         :root {
             --primary: #2563eb;
+            --primary-hover: #1d4ed8;
             --bg: #f8fafc;
             --card-bg: #ffffff;
             --text: #1e293b;
             --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
         }
 
         body {
@@ -44,9 +47,43 @@
             margin-bottom: 20px;
         }
 
+        /* Tabs for Modes */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #f1f5f9;
+        }
+
+        /* Layout */
         .layout {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 320px 1fr;
             gap: 20px;
         }
 
@@ -57,13 +94,31 @@
             height: fit-content;
         }
 
+        .control-section {
+            display: none; /* Hidden by default, toggled by tabs */
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .control-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .control-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
         }
 
         .control-group label {
             display: block;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             font-weight: 600;
             margin-bottom: 8px;
             display: flex;
@@ -75,79 +130,77 @@
             cursor: pointer;
         }
 
-        .control-group input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            box-sizing: border-box;
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            width: 45%; /* Two columns roughly */
         }
 
         .value-display {
             color: var(--primary);
+            font-family: monospace;
         }
 
-        /* Chart Container Constraints */
+        /* Chart Area */
         .chart-wrapper {
             position: relative;
             width: 100%;
-            height: 50vh; /* Takes up half the viewport height */
-            min-height: 300px;
-            max-height: 500px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-        }
-
-        .stat-card {
-            background: #f8fafc;
-            padding: 10px;
-            border-radius: 6px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-size: 1.1rem;
-            font-weight: 700;
+            height: 50vh;
+            min-height: 350px;
+            max-height: 600px;
         }
 
         .btn {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background-color: var(--primary);
             color: white;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            margin-top: 10px;
+            margin-top: 15px;
             transition: background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn:hover {
-            background-color: #1d4ed8;
+            background-color: var(--primary-hover);
+        }
+
+        .footer-link {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .footer-link a {
+            color: var(--primary);
+            text-decoration: none;
         }
 
         @media (max-width: 768px) {
             .layout {
                 grid-template-columns: 1fr;
             }
-            
             .chart-wrapper {
                 height: 350px;
+            }
+            .checkbox-label {
+                width: 100%;
             }
         }
     </style>
@@ -157,36 +210,123 @@
 <div class="container">
     <h1>Leveraged ETF Simulator</h1>
     
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="setMode('standard')">Standard Simulation</button>
+        <button class="tab-btn" onclick="setMode('compare-lev')">Compare Leverages</button>
+        <button class="tab-btn" onclick="setMode('compare-vol')">Compare Volatility</button>
+        <button class="tab-btn" onclick="setMode('compare-ret')">Compare Returns</button>
+    </div>
+
     <div class="layout">
         <!-- Controls Sidebar -->
         <div class="controls">
+            
+            <!-- Global Settings (Always Visible) -->
             <div class="control-group">
-                <label>Initial Investment ($) <span id="val-initial" class="value-display">10000</span></label>
-                <input type="range" id="initial" min="100" max="1000000" step="100" value="10000">
+                <!-- Initial Investment is hidden/fixed, but we show Time Period -->
+                <label>Time Period (Days) <span id="disp-days">252</span></label>
+                <input type="range" id="days" min="20" max="1260" step="10" value="252">
             </div>
 
-            <div class="control-group">
-                <label>Leverage Ratio <span id="val-leverage" class="value-display">2x</span></label>
-                <input type="range" id="leverage" min="-3" max="5" step="0.2" value="3">
-                <small style="color:#666; display:block; margin-top:5px; font-size:0.75rem;">Negative values = Inverse ETF</small>
+            <!-- MODE: Standard -->
+            <div id="ctrl-standard" class="control-section active">
+                <div class="control-group">
+                    <label>Leverage Ratio <span id="disp-std-lev">2x</span></label>
+                    <input type="range" id="std-lev" min="-3" max="5" step="0.5" value="2">
+                </div>
+                <div class="control-group">
+                    <label>Volatility (%) <span id="disp-std-vol">20%</span></label>
+                    <input type="range" id="std-vol" min="5" max="80" step="1" value="20">
+                </div>
+                <div class="control-group">
+                    <label>Exp. Annual Return (%) <span id="disp-std-ret">8%</span></label>
+                    <input type="range" id="std-ret" min="-30" max="30" step="1" value="8">
+                </div>
             </div>
 
-            <div class="control-group">
-                <label>Annualized Volatility (%) <span id="val-volatility" class="value-display">18.0%</span></label>
-                <input type="range" id="volatility" min="0" max="60" step="1" value="18">
+            <!-- MODE: Compare Leverages -->
+            <div id="ctrl-compare-lev" class="control-section">
+                <div class="control-group">
+                    <label>Volatility (%) <span id="disp-cl-vol">20%</span></label>
+                    <input type="range" id="cl-vol" min="5" max="80" step="1" value="20">
+                </div>
+                <div class="control-group">
+                    <label>Exp. Annual Return (%) <span id="disp-cl-ret">8%</span></label>
+                    <input type="range" id="cl-ret" min="-30" max="30" step="1" value="8">
+                </div>
+                <div class="control-group">
+                    <label style="margin-bottom:10px">Select Leverages to Compare:</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="1" checked> 1x (Index)</label>
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="2" checked> 2x</label>
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="3" checked> 3x</label>
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="4"> 4x</label>
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="5"> 5x</label>
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="6"> 6x</label>
+                        
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="-1"> -1x (Inverse)</label>
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="-2"> -2x</label>
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="-3"> -3x</label>
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="-4"> -4x</label>
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="-5"> -5x</label>
+                        <label class="checkbox-label"><input type="checkbox" class="lev-select" value="-6"> -6x</label>
+                    </div>
+                </div>
             </div>
 
-            <div class="control-group">
-                <label>Exp. Annual Return (%) <span id="val-return" class="value-display">10%</span></label>
-                <input type="range" id="return" min="-30" max="30" step="1" value="7">
+            <!-- MODE: Compare Volatility -->
+            <div id="ctrl-compare-vol" class="control-section">
+                <div class="control-group">
+                    <label>Leverage Ratio <span id="disp-cv-lev">3x</span></label>
+                    <input type="range" id="cv-lev" min="-3" max="5" step="0.5" value="3">
+                </div>
+                <div class="control-group">
+                    <label>Exp. Annual Return (%) <span id="disp-cv-ret">8%</span></label>
+                    <input type="range" id="cv-ret" min="-30" max="30" step="1" value="8">
+                </div>
+                <div class="control-group">
+                    <label>Scenario 1 Volatility <span id="disp-cv-v1">10%</span></label>
+                    <input type="range" id="cv-v1" min="5" max="100" step="1" value="10">
+                </div>
+                <div class="control-group">
+                    <label>Scenario 2 Volatility <span id="disp-cv-v2">30%</span></label>
+                    <input type="range" id="cv-v2" min="5" max="100" step="1" value="30">
+                </div>
+                <div class="control-group">
+                    <label>Scenario 3 Volatility <span id="disp-cv-v3">60%</span></label>
+                    <input type="range" id="cv-v3" min="5" max="100" step="1" value="60">
+                </div>
             </div>
 
-            <div class="control-group">
-                <label>Time Period (Days) <span id="val-days" class="value-display">252</span></label>
-                <input type="range" id="days" min="10" max="3650" step="10" value="252">
+            <!-- MODE: Compare Returns -->
+            <div id="ctrl-compare-ret" class="control-section">
+                <div class="control-group">
+                    <label>Leverage Ratio <span id="disp-cr-lev">3x</span></label>
+                    <input type="range" id="cr-lev" min="-3" max="5" step="0.5" value="3">
+                </div>
+                <div class="control-group">
+                    <label>Volatility (%) <span id="disp-cr-vol">20%</span></label>
+                    <input type="range" id="cr-vol" min="5" max="80" step="1" value="20">
+                </div>
+                <div class="control-group">
+                    <label>Scenario 1 Return <span id="disp-cr-r1">-10%</span></label>
+                    <input type="range" id="cr-r1" min="-50" max="50" step="1" value="-10">
+                </div>
+                <div class="control-group">
+                    <label>Scenario 2 Return <span id="disp-cr-r2">0%</span></label>
+                    <input type="range" id="cr-r2" min="-50" max="50" step="1" value="0">
+                </div>
+                <div class="control-group">
+                    <label>Scenario 3 Return <span id="disp-cr-r3">15%</span></label>
+                    <input type="range" id="cr-r3" min="-50" max="50" step="1" value="15">
+                </div>
             </div>
 
-            <button class="btn" onclick="runSimulation()">Re-Simulate (New Random Data)</button>
+            <button class="btn" onclick="regenerateRandomness()">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Re-Simulate (New Random Data)
+            </button>
         </div>
 
         <!-- Chart Area -->
@@ -194,71 +334,131 @@
             <div class="chart-wrapper">
                 <canvas id="simChart"></canvas>
             </div>
-            
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-label">Underlying Final</div>
-                    <div class="stat-value" id="res-underlying">$0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Underlying Return</div>
-                    <div class="stat-value" id="res-underlying-pct">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Leveraged Final</div>
-                    <div class="stat-value" id="res-leveraged">$0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Leveraged Return</div>
-                    <div class="stat-value" id="res-leveraged-pct">0%</div>
-                </div>
+            <div style="margin-top: 10px; font-size: 0.85rem; color: #666; text-align: center;">
+                *Simulations use Geometric Brownian Motion. All scenarios start with $10,000.
             </div>
         </div>
     </div>
-    <!-- Added hyperlink -->
+    
     <div class="footer-link">
         Back to <a href="https://outliersecon.github.io/Outliers-Investment/" target="_blank">Outliers Investment</a>
     </div>    
 </div>
 
 <script>
-    // DOM Elements
-    const inputs = {
-        initial: document.getElementById('initial'),
-        leverage: document.getElementById('leverage'),
-        volatility: document.getElementById('volatility'),
-        return: document.getElementById('return'),
-        days: document.getElementById('days')
-    };
-
-    const displays = {
-        initial: document.getElementById('val-initial'),
-        leverage: document.getElementById('val-leverage'),
-        volatility: document.getElementById('val-volatility'),
-        return: document.getElementById('val-return'),
-        days: document.getElementById('val-days')
-    };
-
-    const results = {
-        uFinal: document.getElementById('res-underlying'),
-        uPct: document.getElementById('res-underlying-pct'),
-        lFinal: document.getElementById('res-leveraged'),
-        lPct: document.getElementById('res-leveraged-pct')
-    };
-
+    // --- Configuration & State ---
+    let currentMode = 'standard';
     let chartInstance = null;
+    
+    // Fixed Initial Investment
+    const INITIAL_INVESTMENT = 10000;
 
-    // Helper to format currency
-    const formatCurrency = (num) => {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
+    // We store a fixed array of random numbers (Z-scores) so that when users 
+    // change parameters (like leverage), the underlying market path stays "consistent"
+    // until they explicitly ask for a re-simulation.
+    let randomZScores = []; 
+
+    // Palette for multi-line charts
+    const colors = [
+        '#2563eb', // Blue
+        '#10b981', // Green
+        '#f59e0b', // Amber
+        '#ef4444', // Red
+        '#8b5cf6', // Purple
+        '#ec4899', // Pink
+        '#06b6d4', // Cyan
+        '#f97316', // Orange
+        '#6366f1', // Indigo
+        '#84cc16'  // Lime
+    ];
+
+    // --- DOM Elements & Event Listeners ---
+    const dom = {
+        days: document.getElementById('days'),
+        // Standard
+        stdLev: document.getElementById('std-lev'),
+        stdVol: document.getElementById('std-vol'),
+        stdRet: document.getElementById('std-ret'),
+        // Compare Lev
+        clVol: document.getElementById('cl-vol'),
+        clRet: document.getElementById('cl-ret'),
+        levSelects: document.querySelectorAll('.lev-select'),
+        // Compare Vol
+        cvLev: document.getElementById('cv-lev'),
+        cvRet: document.getElementById('cv-ret'),
+        cvV1: document.getElementById('cv-v1'),
+        cvV2: document.getElementById('cv-v2'),
+        cvV3: document.getElementById('cv-v3'),
+        // Compare Ret
+        crLev: document.getElementById('cr-lev'),
+        crVol: document.getElementById('cr-vol'),
+        crR1: document.getElementById('cr-r1'),
+        crR2: document.getElementById('cr-r2'),
+        crR3: document.getElementById('cr-r3'),
     };
 
-    // Helper to format percent
-    const formatPct = (num) => {
-        return num.toFixed(2) + '%';
-    };
+    // Attach listeners to all inputs to trigger updates
+    document.querySelectorAll('input[type="range"]').forEach(input => {
+        input.addEventListener('input', (e) => {
+            updateLabels();
+            // If changing days, we must regenerate random array size
+            if(e.target.id === 'days') {
+                generateRandomZScores();
+            }
+            runSimulation();
+        });
+    });
 
-    // Box-Muller transform for normal distribution
+    document.querySelectorAll('input[type="checkbox"]').forEach(box => {
+        box.addEventListener('change', runSimulation);
+    });
+
+    // --- Core Logic ---
+
+    function setMode(mode) {
+        currentMode = mode;
+        
+        // Update Tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Show/Hide Control Sections
+        document.querySelectorAll('.control-section').forEach(sec => sec.classList.remove('active'));
+        if(mode === 'standard') document.getElementById('ctrl-standard').classList.add('active');
+        if(mode === 'compare-lev') document.getElementById('ctrl-compare-lev').classList.add('active');
+        if(mode === 'compare-vol') document.getElementById('ctrl-compare-vol').classList.add('active');
+        if(mode === 'compare-ret') document.getElementById('ctrl-compare-ret').classList.add('active');
+
+        runSimulation();
+    }
+
+    function updateLabels() {
+        // Helper to update span text next to slider
+        const setTxt = (id, val, suffix='') => document.getElementById(id).innerText = val + suffix;
+        
+        setTxt('disp-days', dom.days.value);
+
+        setTxt('disp-std-lev', dom.stdLev.value, 'x');
+        setTxt('disp-std-vol', dom.stdVol.value, '%');
+        setTxt('disp-std-ret', dom.stdRet.value, '%');
+
+        setTxt('disp-cl-vol', dom.clVol.value, '%');
+        setTxt('disp-cl-ret', dom.clRet.value, '%');
+
+        setTxt('disp-cv-lev', dom.cvLev.value, 'x');
+        setTxt('disp-cv-ret', dom.cvRet.value, '%');
+        setTxt('disp-cv-v1', dom.cvV1.value, '%');
+        setTxt('disp-cv-v2', dom.cvV2.value, '%');
+        setTxt('disp-cv-v3', dom.cvV3.value, '%');
+
+        setTxt('disp-cr-lev', dom.crLev.value, 'x');
+        setTxt('disp-cr-vol', dom.crVol.value, '%');
+        setTxt('disp-cr-r1', dom.crR1.value, '%');
+        setTxt('disp-cr-r2', dom.crR2.value, '%');
+        setTxt('disp-cr-r3', dom.crR3.value, '%');
+    }
+
+    // Box-Muller Transform
     function randn_bm() {
         let u = 0, v = 0;
         while(u === 0) u = Math.random();
@@ -266,78 +466,149 @@
         return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
     }
 
-    function updateDisplays() {
-        displays.initial.textContent = formatCurrency(inputs.initial.value);
-        displays.leverage.textContent = inputs.leverage.value + 'x';
-        displays.volatility.textContent = inputs.volatility.value + '%';
-        displays.return.textContent = inputs.return.value + '%';
-        displays.days.textContent = inputs.days.value;
+    function generateRandomZScores() {
+        const days = parseInt(dom.days.value);
+        randomZScores = [];
+        for(let i=0; i<days; i++) {
+            randomZScores.push(randn_bm());
+        }
+    }
+
+    function regenerateRandomness() {
+        generateRandomZScores();
+        runSimulation();
+    }
+
+    // Calculate a path based on parameters and the shared Z-scores
+    function calculatePath(annualVol, annualRet, leverage) {
+        const days = parseInt(dom.days.value);
+        const dt = 1 / 252; // Time step
+        const dailyVol = (annualVol / 100) * Math.sqrt(dt); // Approx daily vol
+        const dailyDrift = (annualRet / 100) / 252; // Simple daily drift approximation
+        
+        let path = [INITIAL_INVESTMENT];
+        let currentPrice = INITIAL_INVESTMENT;
+        let isBust = false;
+
+        for(let i=0; i<days; i++) {
+            if (i >= randomZScores.length) break; // Safety
+
+            // 1. Calculate Underlying Return for this day
+            // r_t = drift + vol * Z
+            const underlyingReturn = dailyDrift + (dailyVol * randomZScores[i]);
+
+            // 2. Calculate Leveraged Return
+            // lev_r_t = r_t * leverage
+            let levReturn = underlyingReturn * leverage;
+
+            // 3. Update Price
+            if (!isBust) {
+                currentPrice = currentPrice * (1 + levReturn);
+                
+                // Check for bust
+                if (currentPrice <= 0.01) {
+                    currentPrice = 0;
+                    isBust = true;
+                }
+            }
+            path.push(currentPrice);
+        }
+        return path;
     }
 
     function runSimulation() {
-        updateDisplays();
+        if(randomZScores.length === 0) generateRandomZScores();
 
-        const initial = parseFloat(inputs.initial.value);
-        const leverage = parseFloat(inputs.leverage.value);
-        const annualVol = parseFloat(inputs.volatility.value) / 100;
-        const dailyVol = annualVol / Math.sqrt(252);
-        const annualReturn = parseFloat(inputs.return.value) / 100;
-        const days = parseInt(inputs.days.value);
+        const days = parseInt(dom.days.value);
+        
+        // Prepare Chart Data
+        const labels = Array.from({length: days + 1}, (_, i) => i);
+        let datasets = [];
 
-        // Convert annual return to daily drift
-        // Assuming 252 trading days
-        const dailyDrift = annualReturn / 252;
+        if (currentMode === 'standard') {
+            // 1. Underlying (1x)
+            const pathUnderlying = calculatePath(dom.stdVol.value, dom.stdRet.value, 1);
+            datasets.push({
+                label: 'Underlying Asset (1x)',
+                data: pathUnderlying,
+                borderColor: '#94a3b8',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                pointRadius: 0
+            });
 
-        const labels = [];
-        const dataUnderlying = [initial];
-        const dataLeveraged = [initial];
+            // 2. Leveraged
+            const lev = parseFloat(dom.stdLev.value);
+            const pathLev = calculatePath(dom.stdVol.value, dom.stdRet.value, lev);
+            datasets.push({
+                label: `Leveraged (${lev}x)`,
+                data: pathLev,
+                borderColor: colors[0],
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: true
+            });
 
-        let currentUnderlying = initial;
-        let currentLeveraged = initial;
-        let leveragedBust = false;
-
-        for (let i = 1; i <= days; i++) {
-            labels.push(i);
-
-            // Generate daily return based on drift and volatility
-            // Random component
-            const randomShock = randn_bm() * dailyVol;
-            const dailyReturn = dailyDrift + randomShock;
-
-            // Update Underlying
-            currentUnderlying = currentUnderlying * (1 + dailyReturn);
-            dataUnderlying.push(currentUnderlying);
-
-            // Update Leveraged
-            if (!leveragedBust) {
-                const levDailyReturn = dailyReturn * leverage;
-                currentLeveraged = currentLeveraged * (1 + levDailyReturn);
-
-                // Check for bust (if value drops to near zero or negative)
-                if (currentLeveraged <= 0.01) {
-                    currentLeveraged = 0;
-                    leveragedBust = true;
+        } else if (currentMode === 'compare-lev') {
+            const vol = dom.clVol.value;
+            const ret = dom.clRet.value;
+            
+            let colorIdx = 0;
+            dom.levSelects.forEach(cb => {
+                if(cb.checked) {
+                    const lev = parseFloat(cb.value);
+                    const path = calculatePath(vol, ret, lev);
+                    datasets.push({
+                        label: `${lev}x Leverage`,
+                        data: path,
+                        borderColor: colors[colorIdx % colors.length],
+                        borderWidth: 2,
+                        pointRadius: 0
+                    });
+                    colorIdx++;
                 }
-            }
-            dataLeveraged.push(currentLeveraged);
+            });
+
+        } else if (currentMode === 'compare-vol') {
+            const lev = parseFloat(dom.cvLev.value);
+            const ret = dom.cvRet.value;
+            const vols = [dom.cvV1.value, dom.cvV2.value, dom.cvV3.value];
+
+            vols.forEach((v, idx) => {
+                const path = calculatePath(v, ret, lev);
+                datasets.push({
+                    label: `${lev}x ETF @ ${v}% Vol`,
+                    data: path,
+                    borderColor: colors[idx],
+                    borderWidth: 2,
+                    pointRadius: 0
+                });
+            });
+
+        } else if (currentMode === 'compare-ret') {
+            const lev = parseFloat(dom.crLev.value);
+            const vol = dom.crVol.value;
+            const rets = [dom.crR1.value, dom.crR2.value, dom.crR3.value];
+
+            rets.forEach((r, idx) => {
+                const path = calculatePath(vol, r, lev);
+                datasets.push({
+                    label: `${lev}x ETF @ ${r}% Return`,
+                    data: path,
+                    borderColor: colors[idx],
+                    borderWidth: 2,
+                    pointRadius: 0
+                });
+            });
         }
 
-        // Update Stats
-        results.uFinal.textContent = formatCurrency(currentUnderlying);
-        results.uPct.textContent = formatPct(((currentUnderlying - initial) / initial) * 100);
-        results.lFinal.textContent = formatCurrency(currentLeveraged);
-        results.lPct.textContent = formatPct(((currentLeveraged - initial) / initial) * 100);
-        
-        // Color logic for stats
-        results.uPct.style.color = currentUnderlying >= initial ? 'green' : 'red';
-        results.lPct.style.color = currentLeveraged >= initial ? 'green' : 'red';
-
-        updateChart(labels, dataUnderlying, dataLeveraged);
+        renderChart(labels, datasets);
     }
 
-    function updateChart(labels, underlying, leveraged) {
+    function renderChart(labels, datasets) {
         const ctx = document.getElementById('simChart').getContext('2d');
-
+        
         if (chartInstance) {
             chartInstance.destroy();
         }
@@ -346,30 +617,11 @@
             type: 'line',
             data: {
                 labels: labels,
-                datasets: [
-                    {
-                        label: 'Underlying Asset (1x)',
-                        data: underlying,
-                        borderColor: '#64748b', // Slate gray
-                        backgroundColor: 'rgba(100, 116, 139, 0.1)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        tension: 0.1
-                    },
-                    {
-                        label: `Leveraged ETF (${inputs.leverage.value}x)`,
-                        data: leveraged,
-                        borderColor: '#2563eb', // Blue
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        tension: 0.1
-                    }
-                ]
+                datasets: datasets
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Important for fitting in container
+                maintainAspectRatio: false,
                 interaction: {
                     mode: 'index',
                     intersect: false,
@@ -378,54 +630,41 @@
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
-                                }
-                                return label;
+                                return context.dataset.label + ': ' + 
+                                    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed.y);
                             }
                         }
                     },
                     legend: {
                         position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
                     }
                 },
                 scales: {
                     x: {
-                        title: {
-                            display: true,
-                            text: 'Trading Days'
-                        },
-                        ticks: {
-                            maxTicksLimit: 10
-                        }
+                        title: { display: true, text: 'Trading Days' },
+                        ticks: { maxTicksLimit: 8 }
                     },
                     y: {
-                        title: {
-                            display: true,
-                            text: 'Value ($)'
-                        },
+                        title: { display: true, text: 'Portfolio Value ($)' },
                         beginAtZero: true
                     }
+                },
+                elements: {
+                    line: { tension: 0.1 } // Slight curve
                 }
             }
         });
     }
 
-    // Add event listeners to inputs
-    Object.values(inputs).forEach(input => {
-        input.addEventListener('input', runSimulation);
-    });
-
-    // Initial run
+    // Initialize
+    updateLabels();
+    generateRandomZScores(); // Initial seed
     runSimulation();
 
 </script>
-
 </body>
-
 </html>
-
