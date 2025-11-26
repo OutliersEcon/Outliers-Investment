@@ -14,6 +14,7 @@
             --text: #1e293b;
             --border: #e2e8f0;
             --success: #10b981;
+            --success-hover: #059669;
             --danger: #ef4444;
         }
 
@@ -180,6 +181,15 @@
             background-color: var(--primary-hover);
         }
 
+        .btn-success {
+            background-color: var(--success);
+            margin-top: 10px;
+        }
+
+        .btn-success:hover {
+            background-color: var(--success-hover);
+        }
+
         .footer-link {
             margin-top: 20px;
             text-align: center;
@@ -224,7 +234,6 @@
             
             <!-- Global Settings (Always Visible) -->
             <div class="control-group">
-                <!-- Initial Investment is hidden/fixed, but we show Time Period -->
                 <label>Time Period (Days) <span id="disp-days">252</span></label>
                 <input type="range" id="days" min="20" max="1260" step="10" value="252">
             </div>
@@ -233,27 +242,31 @@
             <div id="ctrl-standard" class="control-section active">
                 <div class="control-group">
                     <label>Leverage Ratio <span id="disp-std-lev">2x</span></label>
-                    <input type="range" id="std-lev" min="-3" max="5" step="0.5" value="2">
+                    <input type="range" id="std-lev" min="-6" max="6" step="0.5" value="2">
                 </div>
                 <div class="control-group">
                     <label>Volatility (%) <span id="disp-std-vol">20%</span></label>
-                    <input type="range" id="std-vol" min="5" max="80" step="1" value="20">
+                    <input type="range" id="std-vol" min="0" max="100" step="1" value="20">
                 </div>
                 <div class="control-group">
                     <label>Exp. Annual Return (%) <span id="disp-std-ret">8%</span></label>
-                    <input type="range" id="std-ret" min="-30" max="30" step="1" value="8">
+                    <input type="range" id="std-ret" min="-50" max="50" step="1" value="8">
                 </div>
+                <button class="btn btn-success" onclick="exportToCSV('standard')">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Export to CSV
+                </button>
             </div>
 
             <!-- MODE: Compare Leverages -->
             <div id="ctrl-compare-lev" class="control-section">
                 <div class="control-group">
                     <label>Volatility (%) <span id="disp-cl-vol">20%</span></label>
-                    <input type="range" id="cl-vol" min="5" max="80" step="1" value="20">
+                    <input type="range" id="cl-vol" min="0" max="100" step="1" value="20">
                 </div>
                 <div class="control-group">
                     <label>Exp. Annual Return (%) <span id="disp-cl-ret">8%</span></label>
-                    <input type="range" id="cl-ret" min="-30" max="30" step="1" value="8">
+                    <input type="range" id="cl-ret" min="-50" max="50" step="1" value="8">
                 </div>
                 <div class="control-group">
                     <label style="margin-bottom:10px">Select Leverages to Compare:</label>
@@ -273,41 +286,49 @@
                         <label class="checkbox-label"><input type="checkbox" class="lev-select" value="-6"> -6x</label>
                     </div>
                 </div>
+                <button class="btn btn-success" onclick="exportToCSV('compare_leverages')">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Export to CSV
+                </button>
             </div>
 
             <!-- MODE: Compare Volatility -->
             <div id="ctrl-compare-vol" class="control-section">
                 <div class="control-group">
                     <label>Leverage Ratio <span id="disp-cv-lev">3x</span></label>
-                    <input type="range" id="cv-lev" min="-3" max="5" step="0.5" value="3">
+                    <input type="range" id="cv-lev" min="-6" max="6" step="0.5" value="3">
                 </div>
                 <div class="control-group">
                     <label>Exp. Annual Return (%) <span id="disp-cv-ret">8%</span></label>
-                    <input type="range" id="cv-ret" min="-30" max="30" step="1" value="8">
+                    <input type="range" id="cv-ret" min="-50" max="50" step="1" value="8">
                 </div>
                 <div class="control-group">
                     <label>Scenario 1 Volatility <span id="disp-cv-v1">10%</span></label>
-                    <input type="range" id="cv-v1" min="5" max="100" step="1" value="10">
+                    <input type="range" id="cv-v1" min="0" max="100" step="1" value="10">
                 </div>
                 <div class="control-group">
                     <label>Scenario 2 Volatility <span id="disp-cv-v2">30%</span></label>
-                    <input type="range" id="cv-v2" min="5" max="100" step="1" value="30">
+                    <input type="range" id="cv-v2" min="0" max="100" step="1" value="30">
                 </div>
                 <div class="control-group">
                     <label>Scenario 3 Volatility <span id="disp-cv-v3">60%</span></label>
-                    <input type="range" id="cv-v3" min="5" max="100" step="1" value="60">
+                    <input type="range" id="cv-v3" min="0" max="100" step="1" value="60">
                 </div>
+                <button class="btn btn-success" onclick="exportToCSV('compare_volatility')">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Export to CSV
+                </button>
             </div>
 
             <!-- MODE: Compare Returns -->
             <div id="ctrl-compare-ret" class="control-section">
                 <div class="control-group">
                     <label>Leverage Ratio <span id="disp-cr-lev">3x</span></label>
-                    <input type="range" id="cr-lev" min="-3" max="5" step="0.5" value="3">
+                    <input type="range" id="cr-lev" min="-6" max="6" step="0.5" value="3">
                 </div>
                 <div class="control-group">
                     <label>Volatility (%) <span id="disp-cr-vol">20%</span></label>
-                    <input type="range" id="cr-vol" min="5" max="80" step="1" value="20">
+                    <input type="range" id="cr-vol" min="0" max="80" step="1" value="20">
                 </div>
                 <div class="control-group">
                     <label>Scenario 1 Return <span id="disp-cr-r1">-10%</span></label>
@@ -321,6 +342,10 @@
                     <label>Scenario 3 Return <span id="disp-cr-r3">15%</span></label>
                     <input type="range" id="cr-r3" min="-50" max="50" step="1" value="15">
                 </div>
+                <button class="btn btn-success" onclick="exportToCSV('compare_returns')">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Export to CSV
+                </button>
             </div>
 
             <button class="btn" onclick="regenerateRandomness()">
@@ -658,6 +683,42 @@
                 }
             }
         });
+    }
+
+    function exportToCSV(filenamePrefix) {
+        if (!chartInstance || !chartInstance.data.datasets.length) return;
+
+        const data = chartInstance.data;
+        const rowCount = data.labels.length;
+        const datasets = data.datasets;
+
+        // 1. Build Header Row
+        // "Day, Series1, Series2, ..."
+        let csvContent = "Day," + datasets.map(ds => `"${ds.label}"`).join(",") + "\n";
+
+        // 2. Build Data Rows
+        for (let i = 0; i < rowCount; i++) {
+            let row = [data.labels[i]]; // Day Index
+            for (let ds of datasets) {
+                // Add value, fixed to 2 decimal places
+                row.push(ds.data[i].toFixed(2));
+            }
+            csvContent += row.join(",") + "\n";
+        }
+
+        // 3. Create Download Link
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        const timestamp = new Date().toISOString().slice(0,10);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `${filenamePrefix}_${timestamp}.csv`);
+        
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     // Initialize
